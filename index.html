@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Fetcher</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@material/web@latest/material.min.css">
+    <style>
+        body {
+            background-color: #FFC107;
+            color: #000;
+            font-family: 'Roboto', sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 10px 15px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #fb8c00;
+        }
+        .url-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .copy-button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Fetcher de URLs IPTV</h1>
+    <button id="fetchButton">Buscar URLs</button>
+    <div id="urlContainer"></div>
+
+    <script>
+        async function fetchIptvUrls() {
+            try {
+                const response = await fetch('https://snippet.host/mfgdod/raw');
+                return response.text().then(data => data.split('\n').filter(url => url.trim() !== ''));
+            } catch (error) {
+                console.error('Erro ao buscar URLs:', error);
+                return [];
+            }
+        }
+
+        function typeEffect(element, text, limit = 30) {
+            const displayText = text.length > limit ? text.substring(0, limit) + '...' : text;
+            element.textContent = ''; 
+            displayText.split('').forEach((char, i) => {
+                setTimeout(() => {
+                    element.textContent += char;
+                }, 50 * i); 
+            });
+        }
+
+        document.getElementById('fetchButton').addEventListener('click', async () => {
+            const urls = await fetchIptvUrls();
+            const urlContainer = document.getElementById('urlContainer');
+            urlContainer.innerHTML = ''; 
+
+            urls.forEach(url => {
+                const urlItem = document.createElement('div');
+                urlItem.className = 'url-item';
+
+                const urlText = document.createElement('span');
+                typeEffect(urlText, url);
+
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-button';
+                copyButton.textContent = 'Copiar';
+                copyButton.addEventListener('click', () => {
+                    navigator.clipboard.writeText(url)
+                        .then(() => {
+                            alert('URL copiada: ' + url);
+                        })
+                        .catch(err => {
+                            console.error('Erro ao copiar: ', err);
+                        });
+                });
+
+                urlItem.appendChild(urlText);
+                urlItem.appendChild(copyButton);
+                urlContainer.appendChild(urlItem);
+            });
+        });
+    </script>
+
+</body>
+</html>

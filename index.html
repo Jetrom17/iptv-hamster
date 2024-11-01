@@ -238,7 +238,20 @@
         }
     </style>
 </head>
+<script>
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        e.prompt(); // Exibe automaticamente o prompt de instalação
 
+        e.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Usuário aceitou a instalação');
+            } else {
+                console.log('Usuário recusou a instalação');
+            }
+        });
+    });
+</script>
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

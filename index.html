@@ -15,7 +15,6 @@
             --md-sys-color-surface-variant: #FFC107;
         }
 
-        /* Estilos anteriores mantidos... */
         body {
             margin: 0;
             font-family: 'Roboto', sans-serif;
@@ -120,7 +119,6 @@
             background-color: #ddd;
         }
 
-        /* Novo estilo para o Bottom Sheet */
         .bottom-sheet {
             position: fixed;
             bottom: -100%;
@@ -288,37 +286,54 @@
     <div class="snackbar" id="snackbar"></div>
 
     <script>
-        // URLs para fetch
         const DEFAULT_URL = 'https://snippet.host/mfgdod/raw';
-        const ALTERNATIVE_URL = 'https://snippet.host/paxxtt/raw'; // Substitua pela URL alternativa real
+        const ALTERNATIVE_URL = 'https://snippet.host/paxxtt/raw';
         let currentUrl = DEFAULT_URL;
 
-        // Controle do Bottom Sheet
         const bottomSheet = document.getElementById('bottomSheet');
         const backdrop = document.getElementById('backdrop');
-        
-        // Variável para controlar se o bottom sheet já foi mostrado
-let bottomSheetShown = false;
+        const LAST_DISMISSED_KEY = 'lastDismissedTime';
+        const DIALOG_SHOWN_KEY = 'bottomSheetShown';
+        const ONE_HOUR = 60 * 60 * 1000;
 
-function shouldShowBottomSheet() {
-    return !bottomSheetShown;
-}
+        function shouldShowBottomSheet() {
+            const lastDismissedTime = localStorage.getItem(LAST_DISMISSED_KEY);
+            const bottomSheetShown = localStorage.getItem(DIALOG_SHOWN_KEY);
+            
+            if (!bottomSheetShown) {
+                return true;
+            }
+            
+            if (lastDismissedTime) {
+                const timeSinceLastDismiss = Date.now() - parseInt(lastDismissedTime);
+                return timeSinceLastDismiss >= ONE_HOUR;
+            }
+            
+            return false;
+        }
 
-function showBottomSheet() {
-    if (shouldShowBottomSheet()) {
-        bottomSheet.classList.add('show');
-        backdrop.classList.add('show');
-        bottomSheetShown = true; // Atualiza a variável para indicar que o bottom sheet foi mostrado
-    }
-}
-
+        function showBottomSheet() {
+            if (shouldShowBottomSheet()) {
+                bottomSheet.classList.add('show');
+                backdrop.classList.add('show');
+                localStorage.setItem(DIALOG_SHOWN_KEY, 'true');
+            }
+        }
 
         function closeBottomSheet() {
             bottomSheet.classList.remove('show');
             backdrop.classList.remove('show');
+            localStorage.setItem(LAST_DISMISSED_KEY, Date.now().toString());
         }
 
-        // Copiar URL alternativa
+        function checkAndShowDialog() {
+            if (shouldShowBottomSheet()) {
+                showBottomSheet();
+            }
+        }
+
+        setInterval(checkAndShowDialog, 60 * 1000);
+
         async function copyAlternativeUrl() {
             try {
                 await navigator.clipboard.writeText(ALTERNATIVE_URL);
@@ -329,7 +344,6 @@ function showBottomSheet() {
             }
         }
 
-        // Usar URL alternativa
         function useAlternativeUrl() {
             currentUrl = ALTERNATIVE_URL;
             closeBottomSheet();
@@ -403,17 +417,14 @@ function showBottomSheet() {
             fetchButton.disabled = false;
         });
 
-        // Mostrar o bottom sheet na primeira visita
         window.addEventListener('load', () => {
             setTimeout(() => {
                 showBottomSheet();
             }, 1000);
         });
 
-        // Fechar o bottom sheet ao clicar no backdrop
         backdrop.addEventListener('click', closeBottomSheet);
 
-        // Adicionar suporte a gesture para fechar o bottom sheet
         let touchStartY = 0;
         let touchEndY = 0;
 

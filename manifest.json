@@ -1,0 +1,21 @@
+{
+    "name": "IPTV Hamster 🐹",
+    "short_name": "IPTV",
+    "description": "Aplicativo de busca de URLs de IPTV",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8f9fa",
+    "theme_color": "#FFC107",
+    "icons": [
+        {
+            "src": "IMG_2024_10_11_204323.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "IMG_2024_10_11_204323.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

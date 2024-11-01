@@ -2,7 +2,7 @@
     "name": "IPTV Hamster 🐹",
     "short_name": "IPTV",
     "description": "Aplicativo de busca de URLs de IPTV",
-    "start_url": "/",
+    "start_url": "https://jetrom17.github.io/iptv-hamster/",
     "display": "standalone",
     "background_color": "#f8f9fa",
     "theme_color": "#FFC107",

@@ -266,13 +266,13 @@
     <div class="bottom-sheet" id="bottomSheet">
         <div class="bottom-sheet-drag"></div>
         <div class="bottom-sheet-header">
-            <h2 class="bottom-sheet-title">Nova URL Disponível</h2>
+            <h2 class="bottom-sheet-title">🐹 Hamster informa</h2>
             <button class="material-icons" style="background: none; border: none; cursor: pointer;" onclick="closeBottomSheet()">close</button>
         </div>
         <div class="bottom-sheet-content">
             <p>Uma nova URL de origem está disponível para buscar as listas IPTV:</p>
             <div class="url-card" style="margin-top: 16px;">
-                <div class="url-text" id="alternativeUrl">https://alternative-url.com/iptv</div>
+                <div class="url-text" id="alternativeUrl">https://snippet.host/hqxhhj/raw</div>
                 <button class="copy-button" onclick="copyAlternativeUrl()">
                     <span class="material-icons">content_copy</span>
                     Copiar
@@ -297,18 +297,21 @@
         const bottomSheet = document.getElementById('bottomSheet');
         const backdrop = document.getElementById('backdrop');
         
-        // Verificar se o bottom sheet já foi mostrado
-        function shouldShowBottomSheet() {
-            return !localStorage.getItem('bottomSheetShown');
-        }
+        // Variável para controlar se o bottom sheet já foi mostrado
+let bottomSheetShown = false;
 
-        function showBottomSheet() {
-            if (shouldShowBottomSheet()) {
-                bottomSheet.classList.add('show');
-                backdrop.classList.add('show');
-                localStorage.setItem('bottomSheetShown', 'true');
-            }
-        }
+function shouldShowBottomSheet() {
+    return !bottomSheetShown;
+}
+
+function showBottomSheet() {
+    if (shouldShowBottomSheet()) {
+        bottomSheet.classList.add('show');
+        backdrop.classList.add('show');
+        bottomSheetShown = true; // Atualiza a variável para indicar que o bottom sheet foi mostrado
+    }
+}
+
 
         function closeBottomSheet() {
             bottomSheet.classList.remove('show');

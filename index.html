@@ -171,11 +171,6 @@
             transition: all 0.2s ease;
         }
 
-        .bottom-sheet-button.secondary {
-            background-color: transparent;
-            color: var(--md-sys-color-primary);
-        }
-
         .bottom-sheet-drag {
             width: 32px;
             height: 4px;
@@ -278,7 +273,6 @@
             </div>
         </div>
         <div class="bottom-sheet-actions">
-            <button class="bottom-sheet-button secondary" onclick="closeBottomSheet()">Agora Não</button>
             <button class="bottom-sheet-button" onclick="useAlternativeUrl()">Usar Nova URL</button>
         </div>
     </div>
@@ -286,34 +280,39 @@
     <div class="snackbar" id="snackbar"></div>
 
     <script>
-        const DEFAULT_URL = 'https://snippet.host/mfgdod/raw';
-        const ALTERNATIVE_URL = 'https://snippet.host/paxxtt/raw';
-        let currentUrl = DEFAULT_URL;
-
-        const bottomSheet = document.getElementById('bottomSheet');
-        const backdrop = document.getElementById('backdrop');
+        const URL_A = 'https://snippet.host/mfgdod/raw';
+        const URL_B = 'https://snippet.host/paxxtt/raw';
+        const CURRENT_URL_KEY = 'currentUrl';
         const LAST_DISMISSED_KEY = 'lastDismissedTime';
         const DIALOG_SHOWN_KEY = 'bottomSheetShown';
         const ONE_HOUR = 60 * 60 * 1000;
+
+        let currentUrl = localStorage.getItem(CURRENT_URL_KEY) || URL_A;
+
+        const bottomSheet = document.getElementById('bottomSheet');
+        const backdrop = document.getElementById('backdrop');
+        const alternativeUrl = document.getElementById('alternativeUrl');
+
+        function updateBottomSheetContent() {
+            const alternativeUrlValue = currentUrl === URL_A ? 'paxxtt' : 'mfgdod';
+            alternativeUrl.textContent = alternativeUrlValue;
+        }
 
         function shouldShowBottomSheet() {
             const lastDismissedTime = localStorage.getItem(LAST_DISMISSED_KEY);
             const bottomSheetShown = localStorage.getItem(DIALOG_SHOWN_KEY);
             
-            if (!bottomSheetShown) {
-                return true;
-            }
-            
+            if (!bottomSheetShown) return true;
             if (lastDismissedTime) {
                 const timeSinceLastDismiss = Date.now() - parseInt(lastDismissedTime);
                 return timeSinceLastDismiss >= ONE_HOUR;
             }
-            
             return false;
         }
 
         function showBottomSheet() {
             if (shouldShowBottomSheet()) {
+                updateBottomSheetContent();
                 bottomSheet.classList.add('show');
                 backdrop.classList.add('show');
                 localStorage.setItem(DIALOG_SHOWN_KEY, 'true');
@@ -327,25 +326,24 @@
         }
 
         function checkAndShowDialog() {
-            if (shouldShowBottomSheet()) {
-                showBottomSheet();
-            }
+            if (shouldShowBottomSheet()) showBottomSheet();
         }
 
         setInterval(checkAndShowDialog, 60 * 1000);
 
         async function copyAlternativeUrl() {
+            const urlToCopy = currentUrl === URL_A ? URL_B : URL_A;
             try {
-                await navigator.clipboard.writeText(ALTERNATIVE_URL);
+                await navigator.clipboard.writeText(urlToCopy);
                 showSnackbar('URL alternativa copiada com sucesso!');
             } catch (err) {
                 showSnackbar('Erro ao copiar URL');
-                console.error('Erro ao copiar: ', err);
             }
         }
 
         function useAlternativeUrl() {
-            currentUrl = ALTERNATIVE_URL;
+            currentUrl = currentUrl === URL_A ? URL_B : URL_A;
+            localStorage.setItem(CURRENT_URL_KEY, currentUrl);
             closeBottomSheet();
             document.getElementById('fetchButton').click();
             showSnackbar('Usando nova URL para buscar dados');
@@ -356,7 +354,6 @@
                 const response = await fetch(currentUrl);
                 return response.text().then(data => data.split('\n').filter(url => url.trim() !== ''));
             } catch (error) {
-                console.error('Erro ao buscar URLs:', error);
                 return [];
             }
         }
@@ -365,9 +362,7 @@
             const snackbar = document.getElementById('snackbar');
             snackbar.textContent = message;
             snackbar.classList.add('show');
-            setTimeout(() => {
-                snackbar.classList.remove('show');
-            }, 3000);
+            setTimeout(() => snackbar.classList.remove('show'), 3000);
         }
 
         function createUrlCard(url) {
@@ -387,7 +382,6 @@
                     showSnackbar('URL copiada com sucesso!');
                 } catch (err) {
                     showSnackbar('Erro ao copiar URL');
-                    console.error('Erro ao copiar: ', err);
                 }
             });
 
@@ -418,9 +412,7 @@
         });
 
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                showBottomSheet();
-            }, 1000);
+            setTimeout(showBottomSheet, 1000);
         });
 
         backdrop.addEventListener('click', closeBottomSheet);

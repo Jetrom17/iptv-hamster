@@ -1,6 +1,7 @@
 const CACHE_NAME = 'iptv-cache-v1';
 const urlsToCache = [
     '/',
+    '/iptv-hamster/'
     '/index.html',
     'https://cdnjs.cloudflare.com/ajax/libs/material-components-web/14.0.0/material-components-web.min.css',
     'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
